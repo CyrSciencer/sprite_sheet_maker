@@ -15,9 +15,10 @@ function App() {
     width: number;
     height: number;
   } | null>(null);
+  const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [grid, setGrid] = useState({
-    steps: 8,
-    frames: 7,
+    steps: 4,
+    frames: 4,
   });
   const [totalSlots, setTotalSlots] = useState(grid.steps * grid.frames);
   // Sprite sheet configuration
@@ -121,8 +122,8 @@ function App() {
 
   const SlotNumber = ({ row, col }: { row: number; col: number }) => {
     return (
-      <div>
-        R{row}C{col}
+      <div className="slot-number">
+        R{row} C{col}
         <input
           type="number"
           value={row}
@@ -295,40 +296,44 @@ function App() {
   };
 
   return (
-    <section>
-      <header>
-        <h1>Sprite Sheet Maker</h1>
+    <div className="app-container">
+      <header className="header">
+        <div className="header-content">
+          <h1>Sprite Sheet Maker</h1>
+          <button
+            className="info-btn"
+            onClick={() => setShowInfoOverlay(true)}
+            title="Information about Sprite Sheet Maker"
+          >
+            ℹ️
+          </button>
+        </div>
       </header>
-      <main>
-        <div>
+      <main className="main">
+        <div className="file-upload-section">
           <h2>Upload your images</h2>
           <input
             type="file"
             multiple
             accept="image/*"
             onChange={handleFileUpload}
-            style={{ marginBottom: "20px" }}
+            className="file-input"
           />
           <SlotNumber row={grid.steps} col={grid.frames} />
 
-          <div>
-            <p>
+          <div className="grid-config">
+            <p className="grid-info">
               Sprite Sheet Grid ({grid.steps}×{grid.frames} = {totalSlots}{" "}
               slots)
               {gridDimensions &&
-                ` - Each slot: ${gridDimensions.width}×${gridDimensions.height}px`}{" "}
-              - Uploaded {uploadedFiles.length} files (drag to reorder):
+                ` - slot size: ${gridDimensions.width}×${gridDimensions.height}px`}{" "}
+              - Used {uploadedFiles.filter((file) => file).length} of{" "}
+              {totalSlots} slots (drag to reorder):
             </p>
             <div
+              className="sprite-grid"
               style={{
-                display: "grid",
                 gridTemplateColumns: `repeat(${grid.frames}, 1fr)`,
-                gap: "2px",
-                marginBottom: "20px",
-                border: "2px solid #333",
-                padding: "10px",
-                backgroundColor: "#f0f0f0",
-                maxWidth: "fit-content",
               }}
             >
               {Array.from({ length: totalSlots }, (_, slotIndex) => {
@@ -339,21 +344,7 @@ function App() {
                 return (
                   <div
                     key={slotIndex}
-                    style={{
-                      width: "80px",
-                      height: "80px",
-                      border: hasFile ? "2px solid #4CAF50" : "2px dashed #ccc",
-                      borderRadius: "4px",
-                      padding: "4px",
-                      textAlign: "center",
-                      cursor: "move",
-                      backgroundColor: hasFile ? "#e8f5e8" : "#f9f9f9",
-                      position: "relative",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                    className={`grid-slot ${hasFile ? "filled" : "empty"}`}
                     draggable={hasFile}
                     onDragStart={(e) => {
                       if (hasFile) {
@@ -384,22 +375,9 @@ function App() {
                         <img
                           src={file.preview}
                           alt={file.name}
-                          style={{
-                            width: "100%",
-                            height: "60px",
-                            objectFit: "cover",
-                            borderRadius: "2px",
-                          }}
+                          className="slot-image"
                         />
-                        <div
-                          style={{
-                            fontSize: "8px",
-                            color: "#666",
-                            marginTop: "2px",
-                            textAlign: "center",
-                            lineHeight: "1",
-                          }}
-                        >
+                        <div className="slot-position">
                           R{row + 1}C{col + 1}
                         </div>
                         <button
@@ -410,34 +388,13 @@ function App() {
                             setUploadedFiles(newFiles);
                             await calculateGridDimensions(newFiles);
                           }}
-                          style={{
-                            position: "absolute",
-                            top: "-8px",
-                            right: "-8px",
-                            width: "16px",
-                            height: "16px",
-                            fontSize: "10px",
-                            backgroundColor: "#ff4444",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "50%",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
+                          className="slot-remove-btn"
                         >
                           ×
                         </button>
                       </>
                     ) : (
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "#999",
-                          textAlign: "center",
-                        }}
-                      >
+                      <div className="empty-slot-text">
                         Empty
                         <br />R{row + 1}C{col + 1}
                       </div>
@@ -449,42 +406,23 @@ function App() {
             <button
               onClick={handleGenerateSpriteSheet}
               disabled={isProcessing}
-              style={{
-                padding: "10px 20px",
-                fontSize: "16px",
-                backgroundColor: isProcessing ? "#ccc" : "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: isProcessing ? "not-allowed" : "pointer",
-              }}
+              className={`btn btn-primary ${isProcessing ? "processing" : ""}`}
             >
               {isProcessing ? "Processing..." : "Generate Sprite Sheet"}
             </button>
           </div>
 
           {generatedSpriteSheet && (
-            <div style={{ marginTop: "30px" }}>
-              <h3>Generated Sprite Sheet</h3>
-              <div
-                style={{
-                  border: "2px solid #333",
-                  padding: "10px",
-                  backgroundColor: "#f9f9f9",
-                  display: "inline-block",
-                }}
-              >
+            <div className="sprite-sheet-section">
+              <h3 className="sprite-sheet-title">Generated Sprite Sheet</h3>
+              <div className="sprite-sheet-preview">
                 <img
                   src={generatedSpriteSheet}
                   alt="Generated Sprite Sheet"
-                  style={{
-                    maxWidth: "100%",
-                    height: "auto",
-                    display: "block",
-                  }}
+                  className="sprite-sheet-image"
                 />
               </div>
-              <div style={{ marginTop: "10px" }}>
+              <div className="sprite-sheet-actions">
                 <button
                   onClick={() => {
                     const a = document.createElement("a");
@@ -494,16 +432,7 @@ function App() {
                     a.click();
                     document.body.removeChild(a);
                   }}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "14px",
-                    backgroundColor: "#28a745",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    marginRight: "10px",
-                  }}
+                  className="btn btn-success"
                 >
                   Download Sprite Sheet
                 </button>
@@ -514,15 +443,7 @@ function App() {
                       setGeneratedSpriteSheet(null);
                     }
                   }}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "14px",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
+                  className="btn btn-danger"
                 >
                   Clear
                 </button>
@@ -531,7 +452,70 @@ function App() {
           )}
         </div>
       </main>
-    </section>
+
+      {/* Information Overlay */}
+      {showInfoOverlay && (
+        <div className="overlay" onClick={() => setShowInfoOverlay(false)}>
+          <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
+            <div className="overlay-header">
+              <h2>Sprite Sheet Maker Information</h2>
+              <button
+                className="close-btn"
+                onClick={() => setShowInfoOverlay(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="overlay-body">
+              <p>
+                The Sprite Sheet Maker allows you to create customizable sprite
+                sheets for various uses. However, there are some important
+                limitations to understand:
+              </p>
+
+              <div className="info-section">
+                <h3>How it works:</h3>
+                <ul>
+                  <li>All slots in the grid are the same size</li>
+                  <li>
+                    The slot size is determined by the biggest image you upload
+                  </li>
+                  <li>Smaller images are centered within their slots</li>
+                  <li>Larger images are scaled down to fit the slot size</li>
+                </ul>
+              </div>
+
+              <div className="info-section">
+                <h3>Size limitations:</h3>
+                <ul>
+                  <li>
+                    If an image has a side longer than 1080px, it will be
+                    resized to fit
+                  </li>
+                  <li>Images that don't exceed 1080px will not be resized</li>
+                  <li>The final sprite sheet maintains aspect ratios</li>
+                  <li>Empty slots remain transparent in the final output</li>
+                </ul>
+              </div>
+
+              <div className="info-section">
+                <h3>Best practices:</h3>
+                <ul>
+                  <li>Use images of similar sizes for best results</li>
+                  <li>Consider the final grid layout when arranging images</li>
+                  <li>
+                    Larger images will determine the overall sprite sheet size
+                  </li>
+                  <li>
+                    You can drag and drop to reorder images before generating
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
