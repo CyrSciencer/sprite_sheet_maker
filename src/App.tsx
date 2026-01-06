@@ -23,7 +23,7 @@ function App() {
   const [totalSlots, setTotalSlots] = useState(grid.steps * grid.frames);
   // Sprite sheet configuration
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(event.target.files || []);
     const filesWithPreview = files.map((file) => {
@@ -74,7 +74,7 @@ function App() {
       validFiles.length,
       "valid files out of",
       files.length,
-      "total"
+      "total",
     );
 
     if (validFiles.length === 0) {
@@ -95,8 +95,8 @@ function App() {
 
       console.log("📏 Found max dimensions:", maxWidth, "x", maxHeight);
 
-      // Apply 1080px limit
-      const MAX_DIMENSION = 1080;
+      // Apply 1920px limit
+      const MAX_DIMENSION = 1920;
       let tileWidth = maxWidth;
       let tileHeight = maxHeight;
 
@@ -182,21 +182,21 @@ function App() {
       });
 
       console.log(
-        `✅ Step 1 Complete: Found max dimensions ${maxWidth}x${maxHeight}`
+        `✅ Step 1 Complete: Found max dimensions ${maxWidth}x${maxHeight}`,
       );
 
-      // Step 2: Use biggest image dimensions for grid cells (with 1080px max limit)
-      const MAX_DIMENSION = 1080;
+      // Step 2: Use biggest image dimensions for grid cells (with 1920px max limit)
+      const MAX_DIMENSION = 1920;
       let tileWidth = maxWidth;
       let tileHeight = maxHeight;
 
-      // Scale down if the longest side exceeds 1080px
+      // Scale down if the longest side exceeds 1920px
       if (Math.max(tileWidth, tileHeight) > MAX_DIMENSION) {
         const scale = MAX_DIMENSION / Math.max(tileWidth, tileHeight);
         tileWidth = Math.floor(tileWidth * scale);
         tileHeight = Math.floor(tileHeight * scale);
         console.log(
-          `📏 Scaled down from ${maxWidth}x${maxHeight} to ${tileWidth}x${tileHeight}`
+          `📏 Scaled down from ${maxWidth}x${maxHeight} to ${tileWidth}x${tileHeight}`,
         );
       }
 
@@ -208,7 +208,7 @@ function App() {
       const sheetHeight = tileHeight * grid.steps;
 
       console.log(
-        `🎨 Step 2: Setting up canvas ${sheetWidth}x${sheetHeight}...`
+        `🎨 Step 2: Setting up canvas ${sheetWidth}x${sheetHeight}...`,
       );
 
       // Set canvas size with high DPI for better quality
@@ -249,7 +249,7 @@ function App() {
           // Scale image to fit within the biggest image's cell size
           const scale = Math.min(
             tileWidth / img.width,
-            tileHeight / img.height
+            tileHeight / img.height,
           );
           const scaledWidth = img.width * scale;
           const scaledHeight = img.height * scale;
@@ -350,7 +350,7 @@ function App() {
                       if (hasFile) {
                         e.dataTransfer.setData(
                           "text/plain",
-                          slotIndex.toString()
+                          slotIndex.toString(),
                         );
                       }
                     }}
@@ -358,7 +358,7 @@ function App() {
                     onDrop={(e) => {
                       e.preventDefault();
                       const fromIndex = parseInt(
-                        e.dataTransfer.getData("text/plain")
+                        e.dataTransfer.getData("text/plain"),
                       );
                       if (fromIndex !== slotIndex) {
                         // Swap files between slots
@@ -489,10 +489,10 @@ function App() {
                 <h3>Size limitations:</h3>
                 <ul>
                   <li>
-                    If an image has a side longer than 1080px, it will be
+                    If an image has a side longer than 1920px, it will be
                     resized to fit
                   </li>
-                  <li>Images that don't exceed 1080px will not be resized</li>
+                  <li>Images that don't exceed 1920px will not be resized</li>
                   <li>The final sprite sheet maintains aspect ratios</li>
                   <li>Empty slots remain transparent in the final output</li>
                 </ul>
